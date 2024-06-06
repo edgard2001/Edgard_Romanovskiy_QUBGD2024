@@ -30,7 +30,7 @@ public class Explodable : MonoBehaviour
         flareEmitter.Play();
 
         model.SetActive(false);
-        Invoke("Destroy", 3f);
+        Invoke("Destroy", 1.5f);
     }
 
     private void Destroy()

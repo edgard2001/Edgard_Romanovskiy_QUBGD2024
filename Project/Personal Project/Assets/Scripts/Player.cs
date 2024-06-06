@@ -30,6 +30,7 @@ public class Player : MonoBehaviour
     {
         startPosition = transform.position;
         playerRb = GetComponent<Rigidbody>();
+        material.SetColor("_EmissionColor", Color.white);
     }
 
     // Update is called once per frame
@@ -40,7 +41,6 @@ public class Player : MonoBehaviour
 
         if (!_grounded)
         {
-            print("!_grounded");
             _velocity = lastVelocity;
         }
         else if (alwaysRoll)
@@ -52,7 +52,6 @@ public class Player : MonoBehaviour
         }
         else
         {
-            print("grounded");
             if (_velocity.sqrMagnitude > 1)
                 _velocity.Normalize();
         }
@@ -64,7 +63,7 @@ public class Player : MonoBehaviour
             _jumpCooldown -= Time.deltaTime;
 
 
-        if (Physics.CheckSphere(transform.position, 1f, gameObject.layer))
+        if (Physics.Raycast(transform.position, Vector3.down, 1f))
         {
             _grounded = true;
             if (Input.GetButtonDown("Jump") && _jumpCooldown <= 0)
@@ -80,17 +79,17 @@ public class Player : MonoBehaviour
         }
 
         //material.color = Color.Lerp(Color.white, Color.black, _jumpCooldown / maxJumpCooldown);
-        material.SetColor("_EmissionColor", Color.Lerp(Color.gray, Color.black, _jumpCooldown / maxJumpCooldown));
-        if (_jumpCooldown <= 0)
-            material.SetColor("_EmissionColor", Color.Lerp(Color.gray, Color.white, Mathf.Sin(Time.realtimeSinceStartup * 2) + 1));
-
-        ball.SetDirection(_velocity);
+        if (_jumpCooldown >= 0)
+            material.SetColor("_EmissionColor", Color.Lerp(Color.grey, Color.black, _jumpCooldown / maxJumpCooldown));
+        else
+            material.SetColor("_EmissionColor", Color.white);
     }
 
     void FixedUpdate()
     {
         playerRb.velocity = Vector3.zero + Vector3.up * playerRb.velocity.y;
         playerRb.velocity += _velocity;
+        ball.SetDirection(playerRb.velocity);
 
         if (_jumping)
         {
